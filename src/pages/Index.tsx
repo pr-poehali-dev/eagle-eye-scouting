@@ -124,10 +124,12 @@ export default function Index() {
   }, []);
 
   useEffect(() => {
-    api.auth.me().then((r) => {
-      if (r.user) setUser(r.user);
-      setLoading(false);
-    });
+    api.auth.me()
+      .then((r) => {
+        if (r.user) setUser(r.user);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   const loadData = useCallback(async () => {

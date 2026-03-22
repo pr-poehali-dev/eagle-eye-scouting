@@ -10,15 +10,19 @@ function getSession() {
 }
 
 async function req(base: keyof typeof URLS, path: string, method = 'GET', body?: object) {
-  const res = await fetch(URLS[base] + path, {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Session-Id': getSession(),
-    },
-    body: body ? JSON.stringify(body) : undefined,
-  });
-  return res.json();
+  try {
+    const res = await fetch(URLS[base] + path, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Session-Id': getSession(),
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    return res.json();
+  } catch {
+    return { error: 'Нет соединения с сервером' };
+  }
 }
 
 export const api = {
