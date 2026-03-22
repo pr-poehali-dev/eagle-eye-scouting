@@ -1,4 +1,9 @@
 import { useState } from "react";
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt(): Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
 import {
   Download,
   Shield,
@@ -22,6 +27,27 @@ import { Button } from "@/components/ui/button";
 const Index = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [installPrompt, setInstallPrompt] = useState<Event | null>(null);
+  const [installed, setInstalled] = useState(false);
+
+  useState(() => {
+    const handler = (e: Event) => {
+      e.preventDefault();
+      setInstallPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    window.addEventListener('appinstalled', () => setInstalled(true));
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  });
+
+  const handleInstall = async () => {
+    if (installPrompt) {
+      (installPrompt as BeforeInstallPromptEvent).prompt();
+      const { outcome } = await (installPrompt as BeforeInstallPromptEvent).userChoice;
+      if (outcome === 'accepted') setInstalled(true);
+      setInstallPrompt(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#36393f] text-white overflow-x-hidden">
@@ -42,8 +68,8 @@ const Index = () => {
               <Github className="w-4 h-4 mr-2" />
               GitHub
             </Button>
-            <Button className="bg-[#5865f2] hover:bg-[#4752c4] text-white px-6 py-2 rounded text-sm font-medium">
-              Скачать
+            <Button onClick={handleInstall} className="bg-[#5865f2] hover:bg-[#4752c4] text-white px-6 py-2 rounded text-sm font-medium">
+              {installed ? 'Установлено ✓' : 'Скачать'}
             </Button>
           </div>
           <Button
@@ -63,8 +89,8 @@ const Index = () => {
                 <Github className="w-4 h-4 mr-2" />
                 GitHub
               </Button>
-              <Button className="bg-[#5865f2] hover:bg-[#4752c4] text-white px-6 py-2 rounded text-sm font-medium">
-                Скачать
+              <Button onClick={handleInstall} className="bg-[#5865f2] hover:bg-[#4752c4] text-white px-6 py-2 rounded text-sm font-medium">
+                {installed ? 'Установлено ✓' : 'Скачать'}
               </Button>
             </div>
           </div>
@@ -369,9 +395,9 @@ const Index = () => {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Button className="bg-[#5865f2] hover:bg-[#4752c4] text-white px-6 sm:px-8 py-2 sm:py-3 rounded text-sm font-medium">
+                  <Button onClick={handleInstall} className="bg-[#5865f2] hover:bg-[#4752c4] text-white px-6 sm:px-8 py-2 sm:py-3 rounded text-sm font-medium">
                     <Download className="w-4 h-4 mr-2" />
-                    Скачать Kiscord
+                    {installed ? 'Установлено ✓' : 'Установить Kiscord'}
                   </Button>
                   <Button
                     variant="outline"

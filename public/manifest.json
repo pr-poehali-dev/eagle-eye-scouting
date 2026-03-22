@@ -1,0 +1,18 @@
+{
+  "name": "Kiscord",
+  "short_name": "Kiscord",
+  "description": "Мессенджер нового поколения",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#36393f",
+  "theme_color": "#5865f2",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
